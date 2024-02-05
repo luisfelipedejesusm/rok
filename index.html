@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:heart:</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        .main-container {
+            padding: 50px 30px;
+            box-shadow: 0px 2px 5px 3px rgba(0, 0, 0, 0.125);
+        }
+
+        .loader-class {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color: rgb(0 0 0 / 58%);
+        }
+
+        .loader-class>.text-center {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+        }
+
+        .loader-class>.text-center>.spinner-border {
+            width: 100px !important;
+            height: 100px !important;
+            font-size: 50px;
+        }
+
+        #alliances-checkboxes{
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loader-class" id="loader">
+        <div class="text-center">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="container main-container">
+        <h4>Welcome and say hi to the camera =D</h4>
+        <hr>
+        <div class="row">
+            <div class="col-4">
+                <label for=""><b>Select the properties you need</b></label>
+                <hr>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-id" checked="true" property-name="id">
+                    <label class="form-check-label" for="check-id">
+                        ID
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-name" property-name="name">
+                    <label class="form-check-label" for="check-name">
+                        Nickname
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-alliance" property-name="alliance">
+                    <label class="form-check-label" for="check-alliance">
+                        Alliance Name
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-power" property-name="power">
+                    <label class="form-check-label" for="check-power">
+                        Power
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-kp" property-name="killPoints">
+                    <label class="form-check-label" for="check-kp">
+                        Kill Points
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-dead" property-name="dead">
+                    <label class="form-check-label" for="check-dead">
+                        Deads
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-alliance-history" disabled>
+                    <label class="form-check-label" for="check-alliance-history">
+                        Alliance History
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check-name-history" disabled>
+                    <label class="form-check-label" for="check-name-history">
+                        Nickname History
+                    </label>
+                </div>
+                <hr>
+                <label for=""><b>Select the Alliances you need</b></label>
+                <hr>
+                <div id="alliances-checkboxes">
+
+                </div>
+
+
+            </div>
+            <div class="col">
+                <button class="btn btn-info" onclick="downloadPlayersData()">Get all players data</button>
+                <!-- <button class="btn btn-primary"></button>
+                <button class="btn btn-primary"></button>
+                <button class="btn btn-primary"></button>
+                <button class="btn btn-primary"></button>
+                <button class="btn btn-primary"></button> -->
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        var data = [];
+        var separator = ",";
+
+        function downloadPlayersData(){
+
+            var columns = []
+            document.querySelectorAll("[property-name]").forEach(el => {
+                if(el.checked){
+                    columns.push(el.getAttribute("property-name"))
+                }
+            })
+
+            var csvContent = `data:text/csv;charset=utf-8,${columns.join(separator)}\r\n`;
+
+            var filteredData = []
+
+            document.querySelectorAll("[alliance]").forEach(el => {
+                if(el.checked){
+                    filteredData.push(...data.filter(d => d.alliance == el.getAttribute("alliance")))
+                }
+            })
+            
+            filteredData.forEach(d => {
+                var data = [];
+                columns.forEach(c => data.push(d[c]))
+                csvContent += data.join(separator) + "\r\n";
+            })
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "players.csv");
+            document.body.appendChild(link);
+
+            link.click();
+        }
+
+        function hideLoader(){
+            document.getElementById("loader").style.display = 'none';
+        }
+
+        async function init(){
+            data = await fetchData();
+            var alliances = getAlliances(data);
+            displayAlliances(alliances)
+            console.log(data)
+            hideLoader();
+        }
+
+        function displayAlliances(alliances){
+            alliances.forEach(el => {
+                var div = document.createElement("div")
+                div.classList.add("form-check");
+                var input = document.createElement("input")
+                input.classList.add("form-check-input")
+                input.setAttribute("type", "checkbox")
+                input.setAttribute("id", "alliance-" + el)
+                input.setAttribute("alliance", el)
+                var label = document.createElement("label")
+                label.classList.add("form-check-label")
+                label.setAttribute("for", "alliance-" + el)
+                label.innerHTML = el
+                div.appendChild(input)
+                div.appendChild(label)
+                document.getElementById("alliances-checkboxes").appendChild(div)
+            });
+        }
+
+        function getAlliances(data){
+            var hm = data.reduce((acc, val) => {
+                if(!acc[val["alliance"]]) acc[val["alliance"]] = 0;
+                acc[val["alliance"]] = acc[val["alliance"]] + 1;
+                return acc;
+            }, {})
+            console.log(hm)
+            return [...new Set(data.map(a => a["alliance"]))].sort((a, b) => hm[b] - hm[a]);
+        }
+
+        async function fetchData(force = false, kingdom = 3273){
+            if(localStorage.getItem("player-data") && force == false){
+                return JSON.parse(localStorage.getItem("player-data"));
+            }
+            var playerData = [];
+            var isData = true;
+            var page = 0;
+
+            while(isData){
+                const res = await fetch(`https://corsproxy.io/?`+ encodeURIComponent(`https://rok3222api.z-studio.pl/players?page=${page}`) ,
+                {
+                    headers: new Headers({
+                        "Kingdom": kingdom
+                    })
+                }
+                )
+                const data = await res.json();
+                if(data.data.length > 0){
+                    page++;
+                    playerData.push(...data.data);
+                }else{
+                    isData = false;
+                }
+            }
+            localStorage.setItem("player-data", JSON.stringify(playerData));
+            return playerData;
+        }
+
+        init();
+
+    </script>
+
+</body>
+
+</html>
