@@ -135,6 +135,7 @@
             </div>
             <div class="col">
                 <button class="btn btn-info" onclick="downloadPlayersData()">Get all players data</button>
+                <button class="btn btn-info" onclick="forUpdate()">Force Update</button>
                 <!-- <button class="btn btn-primary"></button>
                 <button class="btn btn-primary"></button>
                 <button class="btn btn-primary"></button>
@@ -152,7 +153,8 @@
     <script>
 
         var data = [];
-        
+        var date = new Date();
+        var dateString = date.toISOString().split("T")[0];
 
         function downloadPlayersData(){
 
@@ -193,9 +195,23 @@
         function hideLoader(){
             document.getElementById("loader").style.display = 'none';
         }
+        function showLoader(){
+            document.getElementById("loader").style.display = 'block';
+        }
 
         async function init(){
-            data = await fetchData();
+            
+            var lastDataDate = localStorage.getItem("lastDataDate");
+            data = await fetchData(dateString != lastDataDate);
+            var alliances = getAlliances(data);
+            displayAlliances(alliances)
+            console.log(data)
+            hideLoader();
+        }
+
+        async function forUpdate(){
+            showLoader();
+            data = await fetchData(true);
             var alliances = getAlliances(data);
             displayAlliances(alliances)
             console.log(data)
@@ -238,6 +254,7 @@
             var playerData = [];
             var isData = true;
             var page = 0;
+            localStorage.setItem("lastDataDate", dateString);
 
             while(isData){
                 const res = await fetch(`https://corsproxy.io/?`+ encodeURIComponent(`https://rok3222api.z-studio.pl/players?page=${page}`) ,
