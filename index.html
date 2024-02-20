@@ -38,6 +38,11 @@
             max-height: 200px;
             overflow-y: scroll;
         }
+
+        .info-preview{
+            max-height: 500px;
+            overflow-y: scroll;
+        }
     </style>
 </head>
 
@@ -124,7 +129,8 @@
                         Nickname History
                     </label>
                 </div>
-                <hr>
+            </div>
+            <div class="col">
                 <label for=""><b>Select the Alliances you need</b></label>
                 <hr>
                 <div id="alliances-checkboxes">
@@ -133,8 +139,11 @@
 
 
             </div>
+        </div>
+        <hr>
+        <div class="row">
             <div class="col">
-                <button class="btn btn-info" onclick="downloadPlayersData()">Get all players data</button>
+                <button class="btn btn-info" onclick="downloadPlayersData()">Download all players data to excel</button>
                 <button class="btn btn-info" onclick="forUpdate()">Force Update</button>
                 <!-- <button class="btn btn-primary"></button>
                 <button class="btn btn-primary"></button>
@@ -142,6 +151,21 @@
                 <button class="btn btn-primary"></button>
                 <button class="btn btn-primary"></button> -->
             </div>
+        </div>
+        <hr>
+        <div class="row">
+            <dic class="col info-preview">
+                <table class="table table-strip">
+                    <thead>
+                        <tr id="prev-header">
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="prev-body">
+                        
+                    </tbody>
+                </table>
+            </dic>
         </div>
     </div>
 
@@ -206,6 +230,7 @@
             var alliances = getAlliances(data);
             displayAlliances(alliances)
             console.log(data)
+            clearUpdateTable(data);
             hideLoader();
         }
 
@@ -215,7 +240,47 @@
             var alliances = getAlliances(data);
             displayAlliances(alliances)
             console.log(data)
+            clearUpdateTable(data);
             hideLoader();
+        }
+
+        function filterData(){
+            var filteredData = []
+
+            document.querySelectorAll("[alliance]").forEach(el => {
+                if(el.checked){
+                    filteredData.push(...data.filter(d => d.alliance == el.getAttribute("alliance")))
+                }
+            })
+
+            return filteredData;
+        }
+
+        function clearUpdateTable(){
+            var data = filterData();
+            var header = document.getElementById("prev-header");
+            var body = document.getElementById("prev-body");
+
+            header.innerHTML = "";
+            body.innerHTML = "";
+
+            if(!data) return;
+
+            for(k in data[0]){
+                var th = document.createElement("th");
+                th.innerHTML = k;
+                header.appendChild(th);
+            }
+
+            for(d of data){
+                var tr = document.createElement("tr");
+                for(k in d){
+                    var td = document.createElement("td");
+                    td.innerHTML = d[k];
+                    tr.appendChild(td);
+                }
+                body.appendChild(tr);
+            }
         }
 
         function displayAlliances(alliances){
@@ -227,6 +292,11 @@
                 input.setAttribute("type", "checkbox")
                 input.setAttribute("id", "alliance-" + el)
                 input.setAttribute("alliance", el)
+                input.addEventListener("change", function(){
+                    showLoader();
+                    clearUpdateTable();
+                    hideLoader();
+                })
                 var label = document.createElement("label")
                 label.classList.add("form-check-label")
                 label.setAttribute("for", "alliance-" + el)
