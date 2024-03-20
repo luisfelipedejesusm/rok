@@ -19,6 +19,15 @@
             a.fc-event{
                 white-space: normal;
             }
+
+            .filters-container{
+                display: flex;
+            }
+
+            .filters-chk{
+                margin-right: 10px;
+            }
+
             @media screen and (max-width:767px) { 
                 .fc-toolbar.fc-header-toolbar {font-size: 60%}
                 .fc-event-time{
@@ -84,9 +93,21 @@
                 "active": false,
                 "fn": getChronicleEvents,
                 "fnParameters": ["2024-04-03 00:00:00", "2024-05-16 00:00:00"]
+            },
+            "preKvkEvent": {
+                "label": "Pre KVK",
+                "active": true,
+                "fn": getPreKvkEvents,
+                "fnParameters": []
+            },
+            "wheelEvent": {
+                "label": "Commander Wheel",
+                "active": true,
+                "fn": getWheelEvents,
+                "fnParameters": []
             }
         }
-        const selectedTypes = new Set(["ancientRuinEvent", "darkAltarEvent"]);
+        const selectedTypes = new Set(["ancientRuinEvent", "darkAltarEvent", "preKvkEvent", "wheelEvent"]);
         function getAncientRuinsEvents(startingTime, times){
             var dates = [];
             for (var i = 0; i < 20; i++) {
@@ -128,65 +149,73 @@
             }
             return events;
         }
+        function getPreKvkEvents(){
+            return [
+                {
+                    title: 'Preparation',
+                    start: '2024-03-18',
+                    end: '2024-03-22',
+                    color: '#42A5F5'
+                }, {
+                    title: 'Training 22k troops',
+                    start: '2024-03-20',
+                    end: '2024-03-22',
+                    color: '#4CAF50'
+                }, {
+                    title: 'Matchmaking',
+                    start: '2024-03-22',
+                    end: '2024-03-26',
+                    color: '#42A5F5'
+                }, {
+                    title: 'Training 12k troops',
+                    start: '2024-03-24',
+                    end: '2024-03-26',
+                    color: '#4CAF50'
+                }, {
+                    title: 'Pre KVK Marauders',
+                    start: '2024-03-28',
+                    end: '2024-03-30',
+                    color: '#FFA726'
+                }, {
+                    title: 'Pre KVK Training',
+                    start: '2024-03-30',
+                    end: '2024-04-01',
+                    color: '#FFA726'
+                }, {
+                    title: 'Pre KVK Forts',
+                    start: '2024-04-01',
+                    end: '2024-04-03',
+                    color: '#FFA726'
+                }, {
+                    title: 'KVK 3 Lost Kingdom Open',
+                    start: '2024-04-03',
+                    end: '2024-05-16',
+                    color: '#F44336'
+                }
+            ]
+        }
+        function getWheelEvents() {
+                return [{
+                    title: 'Cavalry Wheel',
+                    start: '2024-04-09',
+                    end: '2024-04-12',
+                    color: '#42A5F5'
+                }, {
+                    title: 'Infantry Wheel',
+                    start: '2024-04-23',
+                    end: '2024-04-26',
+                    color: '#42A5F5'
+                }, {
+                    title: 'Archer Wheel',
+                    start: '2024-05-07',
+                    end: '2024-05-10',
+                    color: '#42A5F5'
+                }];
+            }
 
         function getCalendarEvents(){
             var events =  [
-                        {
-                            title: 'Preparation',
-                            start: '2024-03-18',
-                            end: '2024-03-22',
-                            color: '#42A5F5'
-                        }, {
-                            title: 'Training 22k troops',
-                            start: '2024-03-20',
-                            end: '2024-03-22',
-                            color: '#4CAF50'
-                        }, {
-                            title: 'Matchmaking',
-                            start: '2024-03-22',
-                            end: '2024-03-26',
-                            color: '#42A5F5'
-                        }, {
-                            title: 'Training 12k troops',
-                            start: '2024-03-24',
-                            end: '2024-03-26',
-                            color: '#4CAF50'
-                        }, {
-                            title: 'Pre KVK Marauders',
-                            start: '2024-03-28',
-                            end: '2024-03-30',
-                            color: '#FFA726'
-                        }, {
-                            title: 'Pre KVK Training',
-                            start: '2024-03-30',
-                            end: '2024-04-01',
-                            color: '#FFA726'
-                        }, {
-                            title: 'Pre KVK Forts',
-                            start: '2024-04-01',
-                            end: '2024-04-03',
-                            color: '#FFA726'
-                        }, {
-                            title: 'KVK 3 Lost Kingdom Open',
-                            start: '2024-04-03',
-                            end: '2024-05-16',
-                            color: '#F44336'
-                        }, {
-                            title: 'Cavalry Wheel',
-                            start: '2024-04-09',
-                            end: '2024-04-12',
-                            color: '#42A5F5'
-                        }, {
-                            title: 'Infantry Wheel',
-                            start: '2024-04-23',
-                            end: '2024-04-26',
-                            color: '#42A5F5'
-                        }, {
-                            title: 'Archer Wheel',
-                            start: '2024-05-07',
-                            end: '2024-05-10',
-                            color: '#42A5F5'
-                        },
+                        
                         // ...ancientRuinsEvents,
                         // ...darkAltarEvents,
                         // ...chronicleEvents
@@ -195,6 +224,34 @@
                         events.push(...evFunctions[ev].fn(...evFunctions[ev].fnParameters))
                     }
                     return events
+        }
+
+        function insertFilters(calendar){
+            var fcToolbar = document.getElementsByClassName("fc-header-toolbar")[0];
+            // const eventTypes = [["KVK Chronicles", "chronicleEvent", 1]];
+            var filtersHtml = `<div class="filters-container">`;
+            for(var ev in evFunctions){
+                filtersHtml += `
+                <div class="form-check filters-chk">
+                    <input class="form-check-input" type="checkbox" ${evFunctions[ev].active? "checked" : ""} value="${ev}" id="chk-${ev}" />
+                    <label class="form-check-label" for="chk-${ev}">${evFunctions[ev].label}</label>
+                </div>            
+            `
+            }
+            filtersHtml += "</div>"
+            
+            fcToolbar.insertAdjacentHTML("afterend", filtersHtml)
+            var checkboxes = document.getElementsByClassName("filters-chk");
+            for(var c of checkboxes){
+                c.addEventListener("click", function(ev){
+                    if(!ev.target.checked){
+                        selectedTypes.delete(ev.target.value)
+                    }else{
+                        selectedTypes.add(ev.target.value)
+                    }
+                    calendar.refetchEvents();
+                })
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -223,31 +280,8 @@
                 }
             });
             calendar.render();
-            var fcToolbar = document.getElementsByClassName("fc-header-toolbar")[0];
-            const eventTypes = [["KVK Chronicles", "chronicleEvent", 1]];
-            var filtersHtml = `<div class="filters-container">`;
-            for(var ev in evFunctions){
-                filtersHtml += `
-                <div class="form-check filters-chk">
-                    <input class="form-check-input" type="checkbox" ${evFunctions[ev].active? "checked" : ""} value="${ev}" id="chk-${ev}" />
-                    <label class="form-check-label" for="chk-${ev}">${evFunctions[ev].label}</label>
-                </div>            
-            `
-            }
-            filtersHtml += "</div>"
+            insertFilters(calendar);
             
-            fcToolbar.insertAdjacentHTML("afterend", filtersHtml)
-            var checkboxes = document.getElementsByClassName("filters-chk");
-            for(var c of checkboxes){
-                c.addEventListener("click", function(ev){
-                    if(!ev.target.checked){
-                        selectedTypes.delete(ev.target.value)
-                    }else{
-                        selectedTypes.add(ev.target.value)
-                    }
-                    calendar.refetchEvents();
-                })
-            }
         });
 
         // $(document).ready(function () {
