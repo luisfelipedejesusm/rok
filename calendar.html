@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.css"
+        integrity="sha512-Vs4N3trA4pgbqu2gBzX8eyC1J6xwUWDOisDuy1lq1sW+ZvUuQo74/Uuv3tBQsroSDaYU5N64d33LJ5g6gN0MsA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+</head>
+
+<body>
+
+    <div class="container pt-5 pb-5 shadow-5-strong">
+        <div id="calendar"></div>
+
+    </div>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
+    <!-- MDB -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+
+    <!-- <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/moment.min.js'></script>
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
+    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
+    <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script> -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                timeZone: 'UTC',
+                initialView: 'dayGridMonth',
+                initialDate: '2024-04-20',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                    events: [
+                        {
+                            title: 'Preparation',
+                            start: '2024-03-18',
+                            end: '2024-03-22',
+                            color: '#42A5F5'
+                        }, {
+                            title: 'Training 22k troops',
+                            start: '2024-03-20',
+                            end: '2024-03-22',
+                            color: '#4CAF50'
+                        }, {
+                            title: 'Matchmaking',
+                            start: '2024-03-22',
+                            end: '2024-03-26',
+                            color: '#42A5F5'
+                        }, {
+                            title: 'Training 12k troops',
+                            start: '2024-03-24',
+                            end: '2024-03-26',
+                            color: '#4CAF50'
+                        }, {
+                            title: 'Pre KVK Marauders',
+                            start: '2024-03-28',
+                            end: '2024-03-30',
+                            color: '#FFA726'
+                        }, {
+                            title: 'Pre KVK Training',
+                            start: '2024-03-30',
+                            end: '2024-04-01',
+                            color: '#FFA726'
+                        }, {
+                            title: 'Pre KVK Forts',
+                            start: '2024-04-01',
+                            end: '2024-04-03',
+                            color: '#FFA726'
+                        }, {
+                            title: 'KVK 3 Lost Kingdom Open',
+                            start: '2024-04-03',
+                            end: '2024-05-15',
+                            color: '#F44336'
+                        }, {
+                            title: 'Cavalry Wheel',
+                            start: '2024-04-09',
+                            end: '2024-04-12',
+                            color: '#42A5F5'
+                        }, {
+                            title: 'Infantry Wheel',
+                            start: '2024-04-23',
+                            end: '2024-04-26',
+                            color: '#42A5F5'
+                        }, {
+                            title: 'Archer Wheel',
+                            start: '2024-05-07',
+                            end: '2024-05-10',
+                            color: '#42A5F5'
+                        },{
+                            title: 'Ancient Ruin',
+                            start: '2024-04-13T10:00:00',
+                            color: '#9575CD'
+                        }
+                    ],
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                    timeZoneName: 'short'
+                }
+            });
+            calendar.render();
+        });
+
+        // $(document).ready(function () {
+        //     var calendar = new FullCalendar.Calendar($('#calendar'), {
+        //         initialView: 'dayGridMonth'
+        //     })
+        //     calendar.render();
+        // $('#calendar').fullCalendar({
+        //     header: {
+        //         left: 'prev,next today',
+        //         center: 'title',
+        //         right: 'month,agendaWeek,agendaDay,listWeek'
+        //     },
+        //     defaultDate: '2024-03-20',
+        //     navLinks: true,
+        //     eventLimit: true,
+        
+        // })
+        // })
+
+    </script>
+</body>
+
+</html>

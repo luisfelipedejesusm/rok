@@ -327,7 +327,7 @@
             localStorage.setItem("lastDataDate", dateString);
 
             while(isData){
-                const res = await fetch(`https://corsproxy.io/?`+ encodeURIComponent(`https://rok3222api.z-studio.pl/players?page=${page}`) ,
+                const res = await fetch(`https://corsproxy.io/?`+ encodeURIComponent(`https://rok3222api.z-studio.pl/kvks/e0dff949-d1a4-49cb-a3bb-80c1fd6a8752/stages/9ed12926-a7b8-4d38-a681-371a3f8ffd9f/data?page=${page}`) ,
                 {
                     headers: new Headers({
                         "Kingdom": kingdom
@@ -335,9 +335,9 @@
                 }
                 )
                 const data = await res.json();
-                if(data.data.length > 0){
+                if(data.length > 0){
                     page++;
-                    playerData.push(...data.data);
+                    playerData.push(...data);
                 }else{
                     isData = false;
                 }
