@@ -65,7 +65,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 
     <script>
-
+        const chronicleTimeline = [["First Steps", 20], ["Eye for an Eye", 42], ["Ancient Brith", 44], ["Revenge", 44], ["Storm Clouds", 44], ["Pilgramage", 44], ["Light and Dark", 42], ["Retribution", 44], ["Strife and Conflict", 44], ["Territorial Exp", 44], ["Contention", 44], ["Wild Ambitions", 42], ["Sacrificial Offer", 44], ["Drums of war", 44], ["Wolves", 44], ["Brick of Annih", 60], ["Twilight", 82], ["Crismon Dawn", 80], ["Lone Banner", 60], ["Blood and fire", 96], ["Last Battle", 24]];
+        const evFunctions = {
+            "ancientRuinEvent": {
+                "label": "Ancient Ruins",
+                "active": true,
+                "fn": getAncientRuinsEvents,
+                "fnParameters": ["2024-04-13 10:00:00", 20]
+            },
+            "darkAltarEvent": {
+                "label": "Dark Altars",
+                "active": true,
+                "fn": getDarkAltarEvents,
+                "fnParameters": ["2024-04-22 12:00:00", 7]
+            },
+            "chronicleEvent": {
+                "label": "KVK Chronicles",
+                "active": false,
+                "fn": getChronicleEvents,
+                "fnParameters": ["2024-04-03 00:00:00", "2024-05-16 00:00:00"]
+            }
+        }
+        const selectedTypes = new Set(["ancientRuinEvent", "darkAltarEvent"]);
         function getAncientRuinsEvents(startingTime, times){
             var dates = [];
             for (var i = 0; i < 20; i++) {
@@ -73,11 +94,11 @@
                     title: 'Ancient Ruin',
                     start: moment(startingTime).add(40 * i, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
                     end: moment(startingTime).add(40 * i + 1, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
+                    className: "ancientRuinEvent",
                     color: '#9575CD'
                 })
             }
             return dates;
-            
         }
         function getDarkAltarEvents(startingTime, times){
             var dates = [];
@@ -86,27 +107,30 @@
                     title: 'Dark Altar',
                     start: moment(startingTime).add(86 * i, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
                     end: moment(startingTime).add(86 * i + 2, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
+                    className: "darkAltarEvent",
                     color: '#D81B60'
                 })
             }
             return dates;
-            
+        }
+        function getChronicleEvents(start, end){
+            var events = [];
+            var lastDate = start;
+            for(var c of chronicleTimeline){
+                events.push({
+                    title: c[0],
+                    start: lastDate,
+                    end: moment(lastDate).add(c[1], "h").format("YYYY-MM-DD[T]HH:mm:ss"),
+                    className: "chronicleEvent",
+                    color: "#4CAF50"
+                })
+                lastDate = moment(lastDate).add(c[1], "h").format("YYYY-MM-DD[T]HH:mm:ss");
+            }
+            return events;
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var ancientRuinsEvents = getAncientRuinsEvents("2024-04-13 10:00:00", 20);
-            var darkAltarEvents = getDarkAltarEvents("2024-04-22 12:00:00", 7);
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                timeZone: 'UTC',
-                initialView: 'dayGridMonth',
-                initialDate: '2024-04-20',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                    events: [
+        function getCalendarEvents(){
+            var events =  [
                         {
                             title: 'Preparation',
                             start: '2024-03-18',
@@ -163,17 +187,67 @@
                             end: '2024-05-10',
                             color: '#42A5F5'
                         },
-                        ...ancientRuinsEvents,
-                        ...darkAltarEvents
-                    ],
+                        // ...ancientRuinsEvents,
+                        // ...darkAltarEvents,
+                        // ...chronicleEvents
+                    ]
+                    for(var ev of [...selectedTypes]){
+                        events.push(...evFunctions[ev].fn(...evFunctions[ev].fnParameters))
+                    }
+                    return events
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            // var ancientRuinsEvents = getAncientRuinsEvents("2024-04-13 10:00:00", 20);
+            // var darkAltarEvents = getDarkAltarEvents("2024-04-22 12:00:00", 7);
+            // var chronicleEvents = getChronicleEvents("2024-04-03 00:00:00", "2024-05-16 00:00:00");
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                timeZone: 'UTC',
+                initialView: 'dayGridMonth',
+                initialDate: '2024-04-20',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: function (fetchInfo, successCallback, failureCallback) {
+                    successCallback(getCalendarEvents())
+                },
                 eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false,
+                    // meridiem: false
                     // timeZoneName: 'short'
                 }
             });
             calendar.render();
+            var fcToolbar = document.getElementsByClassName("fc-header-toolbar")[0];
+            const eventTypes = [["KVK Chronicles", "chronicleEvent", 1]];
+            var filtersHtml = `<div class="filters-container">`;
+            for(var ev in evFunctions){
+                filtersHtml += `
+                <div class="form-check filters-chk">
+                    <input class="form-check-input" type="checkbox" ${evFunctions[ev].active? "checked" : ""} value="${ev}" id="chk-${ev}" />
+                    <label class="form-check-label" for="chk-${ev}">${evFunctions[ev].label}</label>
+                </div>            
+            `
+            }
+            filtersHtml += "</div>"
+            
+            fcToolbar.insertAdjacentHTML("afterend", filtersHtml)
+            var checkboxes = document.getElementsByClassName("filters-chk");
+            for(var c of checkboxes){
+                c.addEventListener("click", function(ev){
+                    if(!ev.target.checked){
+                        selectedTypes.delete(ev.target.value)
+                    }else{
+                        selectedTypes.add(ev.target.value)
+                    }
+                    calendar.refetchEvents();
+                })
+            }
         });
 
         // $(document).ready(function () {
