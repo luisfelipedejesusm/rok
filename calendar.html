@@ -21,11 +21,14 @@
             }
 
             .filters-container{
-                display: flex;
+                display: inline-block;
+                margin-top: 10px;
+                margin-bottom: 10px;
             }
 
             .filters-chk{
                 margin-right: 10px;
+                display: inline-block;
             }
 
             @media screen and (max-width:767px) { 
@@ -35,11 +38,24 @@
                     font-size: 0.65em;
                     /* white-space: normal; */
                 }
-                .fc-event-title{
+                .fc-event{
 
-                    font-size: 0.65em;
+                    font-size: 0.60em;
                     /* white-space: normal; */
-                    /* line-height: 0.70em; */
+                    line-height: 1.2em;
+                }
+                .cont{
+                    background-color: #fffffff2;
+                    padding: 20px 10px !important;
+                }
+                .filters-chk, .fc-timegrid-slot-label-frame,  span.fc-timegrid-axis-cushion.fc-scrollgrid-shrink-cushion.fc-scrollgrid-sync-inner{
+                    font-size: 0.75em;
+                }
+                .fc .fc-col-header-cell-cushion {
+                    font-size: 0.85em !important;
+                }
+                .fc .fc-daygrid-day-number {
+                    font-size: 0.75em !important;
                 }
             }
 
@@ -51,6 +67,10 @@
                 background-color: #fffffff2;
                 padding: 0px  50px;
             }
+            /* .fc .fc-button-primary {
+                background-color: #ca8f7d !important;
+                border-color: #ad7a6a !important;
+            } */
         </style>
 </head>
 
@@ -271,6 +291,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'UTC',
                 initialView: 'dayGridMonth',
+                height: "auto",
                 // initialDate: '2024-04-20',
                 headerToolbar: {
                     left: 'prev,next today',
