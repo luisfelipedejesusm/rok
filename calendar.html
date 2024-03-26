@@ -139,7 +139,7 @@
         const selectedTypes = new Set(["ancientRuinEvent", "darkAltarEvent", "preKvkEvent", "wheelEvent"]);
         function getAncientRuinsEvents(startingTime, times){
             var dates = [];
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < times; i++) {
                 dates.push({
                     title: 'Ancient Ruin',
                     start: moment(startingTime).add(40 * i, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
@@ -152,7 +152,7 @@
         }
         function getDarkAltarEvents(startingTime, times){
             var dates = [];
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < times; i++) {
                 dates.push({
                     title: 'Dark Altar',
                     start: moment(startingTime).add(86 * i, "h").format("YYYY-MM-DD[T]HH:mm:ss"),
@@ -243,6 +243,7 @@
             }
 
         function getCalendarEvents(){
+            console.log("getting events..")
             var events =  [
                         
                         // ...ancientRuinsEvents,
@@ -299,6 +300,7 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: function (fetchInfo, successCallback, failureCallback) {
+                    
                     successCallback(getCalendarEvents())
                 },
                 eventTimeFormat: {
